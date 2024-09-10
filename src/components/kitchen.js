@@ -89,6 +89,17 @@ function kitchenReducer(state, action) {
             const newState = { ...state, people: updatedPeople, stations: updatedStations};
             console.log(newState);
             return { ...state, people: updatedPeople, stations: updatedStations};
+
+
+        case "GET_ITEM": {
+            const updatedPeople = state.people.map(person =>
+                person.id === action.personId
+                    ? { ...person, inventory: [...person.inventory, action.item]}
+                    : person
+            );
+            return { ...state, people: updatedPeople };
+        }
+        
         default:
             return state;
     }
@@ -121,6 +132,7 @@ export default function Kitchen({playerId}) {
                         canGet={station.occupiedBy && station.occupiedBy.id === playerId}
                         occupiedBy={station.occupiedBy}
                         onMoveClicked={() => onMoveClicked(station.name)}
+                        dispatch={dispatch}
                     />
                 ))}
             </div>
