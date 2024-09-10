@@ -1,39 +1,64 @@
 import Station from "./Station"
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
+
+const initialState = {
+    activeStation: 'Shelf',
+    stations: [
+        {
+            name: "Shelf",
+            items: [
+                { id: 1, name: "Sugar" },
+                { id: 2, name: "Salt" },        
+            ],
+        },{
+            name: "Utensils",
+            items: [
+                { id: 3, name: "Knife" },
+                { id: 4, name: "Bowl" },
+                { id: 5, name: "Pot" },
+            ]
+        },{
+            name: "Fridge",
+            items: [
+                { id: 6, name: "Limes" },
+            ]
+        },{
+            name: "CuttingBoard",
+            items: []
+        },{
+            name: "Juicer",
+            items: []
+        },{
+            name: "Stove",
+            items: []
+        }
+    ]
+}
+
+function kitchenReducer(state, action) {
+    console.log(`reduce ${action}`);
+    return state;
+}
 
 export default function Kitchen() {
-    const [activeStation, setActiveStation] = React.useState("Shelf");
-
-    const itemsShelf = [
-        { id: 1, name: "Sugar" },
-        { id: 2, name: "Salt" },
-    ];
-    const itemsUtensils = [
-        { id: 3, name: "Knife" },
-        { id: 4, name: "Bowl" },
-        { id: 5, name: "Pot" },
-    ];
-    const itemsFridge = [
-        { id: 6, name: "Limes" },
-    ];
-    const itemsCuttingBoard = [];
-    const itemsJuicer = [];
-    const itemsStove = [];
+    const [state, dispatch] = useReducer(kitchenReducer, initialState);
 
     function onMoveClicked(stationName) {
-        console.log(`Move requested ${stationName}`);
+        dispatch({ type: "MOVE_TO_STATION", stationName});
     }
 
     return <>
         <div className="kitchen">
             <h3>Kitchen</h3>
             <div className="station-container">
-                <Station name="Shelf" items={itemsShelf} active={activeStation === "Shelf"} onMoveClicked={onMoveClicked} />
-                <Station name="Utensils" items={itemsUtensils} active={activeStation === "Utensils"} onMoveClicked={onMoveClicked} />
-                <Station name="Fridge" items={itemsFridge} active={activeStation === "Fridge"} onMoveClicked={onMoveClicked} />
-                <Station name="CuttingBoard" items={itemsCuttingBoard} active={activeStation === "CuttingBoard"} onMoveClicked={onMoveClicked} />
-                <Station name="Juicer" items={itemsJuicer} active={activeStation === "Juicer"} onMoveClicked={onMoveClicked} />
-                <Station name="Stove" items={itemsJuicer} active={activeStation === "Stove"} onMoveClicked={onMoveClicked} />
+                {state.stations.map((station) => (
+                    <Station key={station.name}
+                        name={station.name}
+                        items={station.items}
+                        active={state.activeStation === station.name}
+                        onMoveClicked={() => onMoveClicked(station.name)}
+                    />
+                ))}
             </div>
         </div>
     </>
