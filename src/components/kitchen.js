@@ -1,6 +1,9 @@
 import Station from "./Station"
+import React, { useState } from 'react';
 
 export default function Kitchen() {
+    const [activeStation, setActiveStation] = React.useState("Shelf");
+
     const itemsShelf = [
         { id: 1, name: "Sugar" },
         { id: 2, name: "Salt" },
@@ -18,9 +21,9 @@ export default function Kitchen() {
         <div className="kitchen">
             <h3>Kitchen</h3>
             <div className="station-container">
-                <Station name="Shelf" items={itemsShelf} />
-                <Station name="Utensils" items={itemsUtensils}/>
-                <Station name="Fridge" items={itemsFridge}/>
+                <Station name="Shelf" items={itemsShelf} active={activeStation === "Shelf"} />
+                <Station name="Utensils" items={itemsUtensils} active={activeStation === "Utensils"} />
+                <Station name="Fridge" items={itemsFridge} active={activeStation === "Fridge"} />
             </div>
         </div>
     </>

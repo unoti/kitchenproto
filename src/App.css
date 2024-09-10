@@ -26,3 +26,14 @@
   float: left;
   margin: 1rem 1rem 1rem 1rem;
 }
+
+.station-item {
+  text-align: left;
+  font-size: 80%;
+}
+
+.item-grab-button {
+  float: right;
+  margin-top: 8px;
+  margin-left: 1em;
+}
