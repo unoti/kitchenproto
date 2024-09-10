@@ -1,8 +1,8 @@
 import PosButton from "./PosButton"
 
-export default function Station({ name, items, active }) {
+export default function Station({ name, items, active, onMoveClicked }) {
     return <div className="station">
-        <PosButton />
+        <PosButton active={active} stationName={name} onClick={onMoveClicked}/>
         <div className="station-title">{name}</div>
         <ul className="station-items">
             {items.map((item) => (

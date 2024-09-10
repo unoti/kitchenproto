@@ -20,16 +20,20 @@ export default function Kitchen() {
     const itemsJuicer = [];
     const itemsStove = [];
 
+    function onMoveClicked(stationName) {
+        console.log(`Move requested ${stationName}`);
+    }
+
     return <>
         <div className="kitchen">
             <h3>Kitchen</h3>
             <div className="station-container">
-                <Station name="Shelf" items={itemsShelf} active={activeStation === "Shelf"} />
-                <Station name="Utensils" items={itemsUtensils} active={activeStation === "Utensils"} />
-                <Station name="Fridge" items={itemsFridge} active={activeStation === "Fridge"} />
-                <Station name="CuttingBoard" items={itemsCuttingBoard} active={activeStation === "CuttingBoard"} />
-                <Station name="Juicer" items={itemsJuicer} active={activeStation === "Juicer"} />
-                <Station name="Stove" items={itemsJuicer} active={activeStation === "Stove"} />
+                <Station name="Shelf" items={itemsShelf} active={activeStation === "Shelf"} onMoveClicked={onMoveClicked} />
+                <Station name="Utensils" items={itemsUtensils} active={activeStation === "Utensils"} onMoveClicked={onMoveClicked} />
+                <Station name="Fridge" items={itemsFridge} active={activeStation === "Fridge"} onMoveClicked={onMoveClicked} />
+                <Station name="CuttingBoard" items={itemsCuttingBoard} active={activeStation === "CuttingBoard"} onMoveClicked={onMoveClicked} />
+                <Station name="Juicer" items={itemsJuicer} active={activeStation === "Juicer"} onMoveClicked={onMoveClicked} />
+                <Station name="Stove" items={itemsJuicer} active={activeStation === "Stove"} onMoveClicked={onMoveClicked} />
             </div>
         </div>
     </>
