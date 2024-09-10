@@ -1,5 +1,8 @@
-import Station from "./Station"
 import React, { useReducer } from 'react';
+
+import Chef from "./Chef"
+import Station from "./Station"
+
 
 const initialState = {
     people: [], // We'll seed this with a first player by submitting an action below.
@@ -104,10 +107,13 @@ export default function Kitchen({playerId}) {
         dispatch({ type: "MOVE_TO_STATION", personId: playerId, stationName}, [playerId]);
     }
 
+    // Find the attached player by their playerId.
+    const player = state.people.find(person => person.id === playerId);
+
     return <>
         <div className="kitchen">
             <h3>Kitchen</h3>
-            <div className="station-container">
+            <div className="stations-container">
                 {state.stations.map((station) => (
                     <Station key={station.name}
                         name={station.name}
@@ -118,6 +124,8 @@ export default function Kitchen({playerId}) {
                     />
                 ))}
             </div>
+
+            {player && <Chef player={player} />}
         </div>
     </>
 }

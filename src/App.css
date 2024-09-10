@@ -42,3 +42,12 @@
   font-size: 50%;
   color: aquamarine;
 }
+
+.attached-player {
+  clear: both;
+  width: 20%;
+}
+
+.attached-player h3 {
+  font-size: 70%;
+}
