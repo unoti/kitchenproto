@@ -1,3 +1,3 @@
 export default function PosButton() {
-    return <button>Move Here</button>
+    return <button>Go Here</button>
 }
