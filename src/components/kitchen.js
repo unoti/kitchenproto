@@ -14,7 +14,7 @@ export default function Kitchen() {
         { id: 5, name: "Pot" },
     ];
     const itemsFridge = [
-        { id: 6, name: "Knife" },
+        { id: 6, name: "Limes" },
     ];
     const itemsCuttingBoard = [];
     const itemsJuicer = [];
