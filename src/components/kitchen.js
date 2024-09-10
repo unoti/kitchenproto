@@ -97,6 +97,7 @@ export default function Kitchen({playerId}) {
     // On startup, load the first player.
     React.useEffect(() => {
         dispatch({ type: "PLAYER_JOINED", player: { id: 1, name: 'Chef 1', station: null, inventory: [] }});
+        //dispatch({ type: "PLAYER_JOINED", player: { id: 2, name: 'Kanara', station: null, inventory: [] }});
     }, [playerId]);
 
     function onMoveClicked(stationName) {
@@ -111,6 +112,7 @@ export default function Kitchen({playerId}) {
                     <Station key={station.name}
                         name={station.name}
                         items={station.items}
+                        canGet={station.occupiedBy && station.occupiedBy.id === playerId}
                         occupiedBy={station.occupiedBy}
                         onMoveClicked={() => onMoveClicked(station.name)}
                     />

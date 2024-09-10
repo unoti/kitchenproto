@@ -1,6 +1,6 @@
 import PosButton from "./PosButton"
 
-export default function Station({ name, items, occupiedBy, onMoveClicked }) {
+export default function Station({ name, items, occupiedBy, canGet, onMoveClicked }) {
     return <div className="station">
         <PosButton occupiedBy={occupiedBy} onClick={onMoveClicked}/>
         <div className="station-title">{name}</div>
@@ -8,7 +8,7 @@ export default function Station({ name, items, occupiedBy, onMoveClicked }) {
             {items.map((item) => (
                 <div key={item.id} className="station-item">
                     {item.name}
-                    {occupiedBy && <button className="item-grab-button">Get</button>}
+                    {canGet && <button className="item-grab-button">Get</button>}
                 </div>
             ))}
         </ul>
