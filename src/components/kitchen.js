@@ -36,7 +36,8 @@ const initialState = {
 }
 
 function kitchenReducer(state, action) {
-    console.log(`reduce ${action}`);
+    console.log(`reduce`);
+    console.log(action);
     return state;
 }
 
