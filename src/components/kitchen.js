@@ -3,6 +3,9 @@ import React, { useReducer } from 'react';
 
 const initialState = {
     activeStation: 'Shelf',
+    people: [
+        { id: 1, name: 'Chef 1', station: null, inventory: [] },
+    ],
     stations: [
         {
             name: "Shelf",
@@ -10,27 +13,33 @@ const initialState = {
                 { id: 1, name: "Sugar" },
                 { id: 2, name: "Salt" },        
             ],
+            occupiedBy: null,
         },{
             name: "Utensils",
             items: [
                 { id: 3, name: "Knife" },
                 { id: 4, name: "Bowl" },
                 { id: 5, name: "Pot" },
-            ]
+            ],
+            occupiedBy: null,
         },{
             name: "Fridge",
             items: [
                 { id: 6, name: "Limes" },
-            ]
+            ],
+            occupiedBy: null,
         },{
             name: "CuttingBoard",
-            items: []
-        },{
+            items: [],
+            occupiedBy: null,
+    },{
             name: "Juicer",
-            items: []
+            items: [],
+            occupiedBy: null,
         },{
             name: "Stove",
-            items: []
+            items: [],
+            occupiedBy: null,
         }
     ]
 }
@@ -38,14 +47,26 @@ const initialState = {
 function kitchenReducer(state, action) {
     console.log(`reduce`);
     console.log(action);
-    return state;
+    switch (action.type) {
+        // [ ] this needs to change to the new strategy of every person knows where they are,
+        //     and every station knows who is in it
+        case "MOVE_TO_STATION":
+            return { ...state, activeStation: action.stationName };
+        default:
+            return state;
+    }
 }
 
 export default function Kitchen() {
     const [state, dispatch] = useReducer(kitchenReducer, initialState);
 
+    // On startup, move player to the shelf.
+    React.useEffect(() => {
+        dispatch({ type: "MOVE_TO_STATION", personId: 1, stationName: "Shelf"});
+    }, []);
+
     function onMoveClicked(stationName) {
-        dispatch({ type: "MOVE_TO_STATION", stationName});
+        dispatch({ type: "MOVE_TO_STATION", personId: 1, stationName});
     }
 
     return <>

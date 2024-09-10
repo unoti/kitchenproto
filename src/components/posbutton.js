@@ -1,6 +1,6 @@
-export default function PosButton({ active, stationName, onClick }) {
+export default function PosButton({ occupiedBy, stationName, onClick }) {
     return <>
-        {active ? <span className="posbtn-here">(Here)</span>
+        {occupiedBy ? <span className="posbtn-here">{occupiedBy.name}</span>
             : <button className="posbtn-go" onClick={onClick}>Go Here</button>
         }
 
