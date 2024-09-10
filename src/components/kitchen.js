@@ -16,6 +16,8 @@ export default function Kitchen() {
     const itemsFridge = [
         { id: 6, name: "Knife" },
     ];
+    const itemsCuttingBoard = [];
+    const itemsJuicer = [];
 
     return <>
         <div className="kitchen">
@@ -24,6 +26,8 @@ export default function Kitchen() {
                 <Station name="Shelf" items={itemsShelf} active={activeStation === "Shelf"} />
                 <Station name="Utensils" items={itemsUtensils} active={activeStation === "Utensils"} />
                 <Station name="Fridge" items={itemsFridge} active={activeStation === "Fridge"} />
+                <Station name="CuttingBoard" items={itemsCuttingBoard} active={activeStation === "CuttingBoard"} />
+                <Station name="Juicer" items={itemsJuicer} active={activeStation === "Juicer"} />
             </div>
         </div>
     </>
