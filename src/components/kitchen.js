@@ -2,7 +2,6 @@ import Station from "./Station"
 import React, { useReducer } from 'react';
 
 const initialState = {
-    activeStation: 'Shelf',
     people: [
         { id: 1, name: 'Chef 1', station: null, inventory: [] },
     ],
@@ -48,10 +47,28 @@ function kitchenReducer(state, action) {
     console.log(`reduce`);
     console.log(action);
     switch (action.type) {
-        // [ ] this needs to change to the new strategy of every person knows where they are,
-        //     and every station knows who is in it
         case "MOVE_TO_STATION":
-            return { ...state, activeStation: action.stationName };
+            // Find the person and update their station.
+            const updatedPeople = state.people.map(person =>
+                person.id === action.personId
+                    ? { ...person, station: action.stationName }
+                    : person
+            );
+            // Update stations to be occupied by person.
+            const updatedStations = state.stations.map(station => {
+                // If moving into a station, mark it as occupied
+                if (station.name === action.stationName) {
+                    return { ...station, occupiedBy: updatedPeople.find(person => person.id === action.personId)};
+                }
+                // If leaving a station, mark it as unoccupied.
+                if (station.occupiedBy && station.occupiedBy.id === action.personId) {
+                    return { ...station, occupiedBy: null};
+                }
+                return station;
+            })
+            const newState = { ...state, people: updatedPeople, stations: updatedStations};
+            console.log(newState);
+            return { ...state, people: updatedPeople, stations: updatedStations};
         default:
             return state;
     }
@@ -77,7 +94,7 @@ export default function Kitchen() {
                     <Station key={station.name}
                         name={station.name}
                         items={station.items}
-                        active={state.activeStation === station.name}
+                        occupiedBy={station.occupiedBy}
                         onMoveClicked={() => onMoveClicked(station.name)}
                     />
                 ))}
