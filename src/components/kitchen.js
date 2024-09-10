@@ -4,9 +4,11 @@ export default function Kitchen() {
     return <>
         <div className="kitchen">
             <h3>Kitchen</h3>
-            <Station />
-            <Station />
-            <Station />
+            <div className="station-container">
+                <Station />
+                <Station />
+                <Station />
+            </div>
         </div>
     </>
 }
