@@ -19,7 +19,7 @@
 
 .station-items {
   border: 1px solid;
-  padding: 10px 10px 10px 10px; 
+  padding: 10px 10px 10px 10px;
 }
 
 .station {
@@ -27,8 +27,14 @@
   margin: 1rem 1rem 1rem 1rem;
 }
 
+.station-area {
+  float: left;
+  min-height: 16em;
+}
+
 .station-item {
   text-align: left;
+  min-width: 6em;
   font-size: 80%;
 }
 

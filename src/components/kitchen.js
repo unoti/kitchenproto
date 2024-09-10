@@ -124,20 +124,21 @@ export default function Kitchen({playerId}) {
     return <>
         <div className="kitchen">
             <h3>Kitchen</h3>
-            <div className="stations-container">
-                {state.stations.map((station) => (
-                    <Station key={station.name}
-                        name={station.name}
-                        items={station.items}
-                        canGet={station.occupiedBy && station.occupiedBy.id === playerId}
-                        occupiedBy={station.occupiedBy}
-                        onMoveClicked={() => onMoveClicked(station.name)}
-                        dispatch={dispatch}
-                    />
-                ))}
+                <div className="stations-container">
+                    {state.stations.map((station) => (
+                        <div className="station-area">
+                            <Station key={station.name}
+                                name={station.name}
+                                items={station.items}
+                                canGet={station.occupiedBy && station.occupiedBy.id === playerId}
+                                occupiedBy={station.occupiedBy}
+                                onMoveClicked={() => onMoveClicked(station.name)}
+                                dispatch={dispatch}
+                            />
+                            {station.occupiedBy && station.occupiedBy.id === playerId && <Chef player={player} />}
+                        </div>
+                    ))}
             </div>
-
-            {player && <Chef player={player} />}
         </div>
     </>
 }
