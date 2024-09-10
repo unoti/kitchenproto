@@ -126,8 +126,8 @@ export default function Kitchen({playerId}) {
             <h3>Kitchen</h3>
                 <div className="stations-container">
                     {state.stations.map((station) => (
-                        <div className="station-area">
-                            <Station key={station.name}
+                        <div key={station.name} className="station-area">
+                            <Station 
                                 name={station.name}
                                 items={station.items}
                                 canGet={station.occupiedBy && station.occupiedBy.id === playerId}
