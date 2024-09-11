@@ -25,7 +25,7 @@ const initialState = {
         },{
             name: "Fridge",
             items: [
-                { id: 6, name: "Limes" },
+                { id: 6, name: "Lime" },
             ],
             occupiedBy: null,
         },{
