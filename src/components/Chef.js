@@ -4,7 +4,8 @@ export default function Chef({player}) {
         <div>
             {player.inventory.map((item) => (
                 <div key={item.id} className="station-item">
-                    {item.name}
+                    <span className="item-name">{item.name}</span>
+                    <span className="item-qty">{item.qty}</span>
                 </div>
             ))}
         </div>

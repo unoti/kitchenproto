@@ -2,7 +2,7 @@ import PosButton from "./PosButton"
 
 export default function Station({ name, items, occupiedBy, canGet, onMoveClicked, dispatch }) {
     function getItem(item) {
-        dispatch({ type: "GET_ITEM", stationName: name, personId: occupiedBy.id, item})
+        dispatch({ type: "GET_ITEM", stationName: name, personId: occupiedBy.id, qty: 1, item})
     }
 
     return <div className="station">

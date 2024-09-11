@@ -32,7 +32,10 @@ const initialState = {
             name: "CuttingBoard",
             items: [],
             occupiedBy: null,
-    },{
+            actions: [
+                { name: "Cut", consumeId: 6, provide: { id: 7, name: "Half Lime" }, usingId: 3}
+            ]
+        },{
             name: "Juicer",
             items: [],
             occupiedBy: null,
@@ -92,11 +95,24 @@ function kitchenReducer(state, action) {
 
 
         case "GET_ITEM": {
-            const updatedPeople = state.people.map(person =>
-                person.id === action.personId
-                    ? { ...person, inventory: [...person.inventory, action.item]}
-                    : person
-            );
+            const updatedPeople = state.people.map(person => {
+                if (person.id === action.personId) {
+                    const foundItemIndex = person.inventory.findIndex(item => item.id === action.item.id);
+
+                    // If item exists in inventory, update its qty.
+                    if (foundItemIndex !== -1) {
+                        const updatedInventory = person.inventory.map((invItem, index) =>
+                            index === foundItemIndex
+                                ? { ...invItem, qty: invItem.qty + action.qty }
+                                : invItem
+                        );
+                        return { ...person, inventory: updatedInventory };
+                    }
+                    // Item was not already in inventory, so add it.
+                    return { ...person, inventory: [...person.inventory, { ...action.item, qty: action.qty}]};
+                }
+                return person;
+            });
             return { ...state, people: updatedPeople };
         }
         
