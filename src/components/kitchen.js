@@ -151,7 +151,8 @@ export default function Kitchen({playerId}) {
                                 onMoveClicked={() => onMoveClicked(station.name)}
                                 dispatch={dispatch}
                             />
-                            {station.occupiedBy && station.occupiedBy.id === playerId && <Chef player={player} />}
+                            {station.occupiedBy && station.occupiedBy.id === playerId &&
+                                <Chef player={player} dispatch={dispatch} />}
                         </div>
                     ))}
             </div>
