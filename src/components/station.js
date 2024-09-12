@@ -6,6 +6,9 @@ export default function Station({ name, items, inventory, occupiedBy, canGet, on
         dispatch({ type: "GET_ITEM", stationName: name, personId: occupiedBy.id, qty: 1, item})
     }
 
+    console.log('render station');
+    console.log(inventory);
+    
     return <div className="station">
         <PosButton occupiedBy={occupiedBy} onClick={onMoveClicked}/>
         <div className="station-title">{name}</div>

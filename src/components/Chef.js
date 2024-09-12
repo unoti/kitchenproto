@@ -3,9 +3,6 @@ export default function Chef({player, items, dispatch}) {
         dispatch({ type: "PUT_ITEM", fromPersonId: player.id, itemId: itemId});
     }
 
-    console.log('chef items');
-    console.log(items);
-
     return <div className="attached-player">
         <h3>Carrying</h3>
         <div>

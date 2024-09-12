@@ -74,6 +74,9 @@ function deleteKey(o, key) {
 }
 
 function updateInventory(existingInventory, item, deltaQty) {
+    console.log(`updateInventory deltaQty=${deltaQty} follows: existingInventory, item`);
+    console.log(existingInventory);
+    console.log(item);
     // Update an inventory and return the updated inventory. deltaQty negative to reduce, positive to increase.
     const existingQty = existingInventory[item.id] ?? 0;
     const newQty = existingQty + deltaQty;
@@ -82,6 +85,18 @@ function updateInventory(existingInventory, item, deltaQty) {
     } else {
         return deleteKey(existingInventory, item.id);
     }
+}
+
+/** Immutably pulls inventory from fromInventory and puts it into toInventory.
+ *  returns [fromInventory, toInventory].
+ */ 
+function transactInventory(item, deltaQty, fromInventory, toInventory) {
+    const updatedFromInventory = updateInventory(fromInventory, item, -deltaQty);
+    const updatedToInventory = updateInventory(toInventory, item, deltaQty);
+    console.log('transact');
+    console.log(updatedFromInventory);
+    console.log(updatedToInventory);
+    return [updatedFromInventory, updatedToInventory];
 }
 
 function getPerson(state, personId) {
@@ -157,6 +172,7 @@ function kitchenReducer(state, action) {
 
         case "GET_ITEM": {
             const person = getPerson(state, action.personId);
+            // change this to use transact
             const newPersonInventory = updateInventory(person.inventory, action.item, action.qty);
             const newPerson = { ...person, inventory: newPersonInventory };
             const newState = {
@@ -168,15 +184,29 @@ function kitchenReducer(state, action) {
             return newState;
         }
 
-        // case "PUT_ITEM": {
-        //     const updatedPeople = state.people.map(person => {
-        //         if (person.id === action.fromPersonId) {
-        //             const foundItemIndex = person.inventory.findIndex(item => item.id === action.item.id);
-        //         }
-        //         return person;
-        //     });
-        //     return state;
-        // }
+        case "PUT_ITEM": {
+            const person = getPerson(state, action.fromPersonId);
+            const item = state.items[action.itemId];
+            const station = state.stations[person.station];
+            const qty = 1;
+            console.log('before put item: personInv, stationInv:');
+            console.log(person.inventory);
+            console.log(station.inventory);
+            const [newPersonInventory, newStationInventory] = transactInventory(
+                item, qty, person.inventory, station.inventory);
+            console.log('put item: newPersonInv, newStationInv:');
+            console.log(newPersonInventory);
+            console.log(newStationInventory);
+            const newPerson = { ...person, inventory: newPersonInventory };
+            const newStation = { ...station, inventory: newStationInventory };
+            const newState = {
+                ...state,
+                people: { ...state.people, [newPerson.id]: newPerson },
+                stations: { ...state.stations, [newStation.id]: newStation },
+            };
+            console.log(newState);
+            return newState;
+        }
 
         default:
             return state;
