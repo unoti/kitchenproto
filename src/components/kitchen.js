@@ -2,9 +2,8 @@ import React, { useReducer } from 'react';
 
 import Chef from "./Chef"
 import Station from "./Station"
+import { unlimitedQty } from "./constants"
 
-
-const unlimitedQty = 9999;
 
 const initialState = {
     items: {
@@ -21,7 +20,7 @@ const initialState = {
     stations: {
         'Shelf': {
             name: "Shelf",
-            items: {
+            inventory: {
                 1: unlimitedQty, // Sugar
                 2: unlimitedQty, // Salt
             },
@@ -29,7 +28,7 @@ const initialState = {
         },
         'Utensils': {
             name: "Utensils",
-            items: {
+            inventory: {
                 3: 1, // Knife. This means there is qty 1 knife here.
                 4: 1, // Bowl
                 5: 1, // Pot
@@ -38,14 +37,14 @@ const initialState = {
         },
         'Fridge': {
             name: "Fridge",
-            items: {
+            inventory: {
                 6: unlimitedQty, // Lime
             },
             occupiedBy: null,
         },
         'CuttingBoard': {
             name: "CuttingBoard",
-            items: {},
+            inventory: {},
             occupiedBy: null,
             actions: [
                 { name: "Cut", consumeId: 6, provideId: 7, usingId: 3}, // Cut limes into half limes using knife
@@ -53,12 +52,12 @@ const initialState = {
         },
         'Juicer': {
             name: "Juicer",
-            items: {},
+            inventory: {},
             occupiedBy: null,
         },
         'Stove': {
             name: "Stove",
-            items: {},
+            inventory: {},
             occupiedBy: null,
         }
     }
@@ -82,8 +81,6 @@ function kitchenReducer(state, action) {
             if (!firstEmptyStation) {
                 console.log('No empty stations available for new player');
             }
-            console.log('firstempty');
-            console.log(firstEmptyStation);
 
             // Add new player to people object with the station name.
             const updatedPeople = {
@@ -94,7 +91,7 @@ function kitchenReducer(state, action) {
             // Mark the station as occupied by the player.
             const updatedStations = {
                 ...state.stations,
-                [firstEmptyStation.name]: { ...firstEmptyStation, occupiedBy: action.player.id}
+                [firstEmptyStation.name]: { ...firstEmptyStation, occupiedBy: action.player}
             };
 
             const newState = {
@@ -190,7 +187,8 @@ export default function Kitchen({playerId}) {
                     <div key={station.name} className="station-area">
                         <Station 
                             name={station.name}
-                            items={station.items}
+                            items={state.items}
+                            inventory={station.inventory}
                             canGet={station.occupiedBy && station.occupiedBy.id === playerId}
                             occupiedBy={station.occupiedBy}
                             onMoveClicked={() => onMoveClicked(station.name)}
