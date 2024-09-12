@@ -67,6 +67,32 @@ const initialState = {
 //     // Return a new people array with the given inventory increased (deltaQty>0) or decreased (deltaQty<0).
 // }
 
+function deleteKey(o, key) {
+    // Copy object o with key removed.
+    const { [key]: _removed, ...updatedItem } = o; // Destructring assignment which removes the key.
+    return updatedItem;
+}
+
+function updateInventory(existingInventory, item, deltaQty) {
+    // Update an inventory and return the updated inventory. deltaQty negative to reduce, positive to increase.
+    const existingQty = existingInventory[item.id] ?? 0;
+    const newQty = existingQty + deltaQty;
+    if (newQty) {
+        return { ...existingInventory, [item.id]: existingQty + deltaQty };
+    } else {
+        return deleteKey(existingInventory, item.id);
+    }
+}
+
+function getPerson(state, personId) {
+    const person = state.people[personId];
+    if (!person) {
+        console.log(`Person ${personId} not found`);
+        return state;
+    }
+    return person;
+}
+    
 function kitchenReducer(state, action) {
     console.log(`reduce`);
     console.log(action);
@@ -102,13 +128,8 @@ function kitchenReducer(state, action) {
             return newState;
         }
             
-        case "MOVE_TO_STATION":
-            const person = state.people[action.personId];
-            if (!person) {
-                console.log(`Person ${action.persionId} not found`);
-                return state;
-            }
-
+        case "MOVE_TO_STATION": {
+            const person = getPerson(state, action.personId);
             const newPerson = { ...person, station: action.stationName};
             const oldStation = state.stations[person.station];
             const newStation = state.stations[action.stationName];
@@ -132,27 +153,19 @@ function kitchenReducer(state, action) {
             const newState = { ...state, people: updatedPeople, stations: updatedStations };
             console.log(newState);
             return newState;
+        }
 
         case "GET_ITEM": {
-            const updatedPeople = state.people.map(person => {
-                if (person.id === action.personId) {
-                    const foundItemIndex = person.inventory.findIndex(item => item.id === action.item.id);
+            const person = getPerson(state, action.personId);
+            const newPersonInventory = updateInventory(person.inventory, action.item, action.qty);
+            const newPerson = { ...person, inventory: newPersonInventory };
+            const newState = {
+                ...state,
+                people: { ...state.people, [newPerson.id]: newPerson },
+            };
 
-                    // If item exists in inventory, update its qty.
-                    if (foundItemIndex !== -1) {
-                        const updatedInventory = person.inventory.map((invItem, index) =>
-                            index === foundItemIndex
-                                ? { ...invItem, qty: invItem.qty + action.qty }
-                                : invItem
-                        );
-                        return { ...person, inventory: updatedInventory };
-                    }
-                    // Item was not already in inventory, so add it.
-                    return { ...person, inventory: [...person.inventory, { ...action.item, qty: action.qty}]};
-                }
-                return person;
-            });
-            return { ...state, people: updatedPeople };
+            console.log(newState);
+            return newState;
         }
 
         // case "PUT_ITEM": {
@@ -202,7 +215,7 @@ export default function Kitchen({playerId}) {
                             dispatch={dispatch}
                         />
                         {station.occupiedBy && station.occupiedBy.id === playerId &&
-                            <Chef player={player} dispatch={dispatch} />}
+                            <Chef player={player} items={state.items} dispatch={dispatch} />}
                     </div>
                 ))}
             </div>
