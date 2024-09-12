@@ -4,47 +4,64 @@ import Chef from "./Chef"
 import Station from "./Station"
 
 
+const unlimitedQty = 9999;
+
 const initialState = {
-    people: [], // We'll seed this with a first player by submitting an action below.
-    stations: [
-        {
+    items: {
+        1: { id: 1, name: 'Sugar', type: 'ingredient', uom: 'volume' },
+        2: { id: 2, name: 'Salt', type: 'ingredient', uom: 'volume' },
+        3: { id: 3, name: 'Knife', type: 'tool' },
+        4: { id: 4, name: 'Bowl', type: 'container' },
+        5: { id: 5, name: 'Pot', type: 'container'},
+        6: { id: 6, name: 'Lime', type: 'ingredient', uom: 'each'},
+        7: { id: 7, name: 'Half Lime', type: 'ingredient', uom: 'each' },
+    },
+
+    people: {}, // Key: playerId. We'll seed this with a first player by submitting an action below.
+    stations: {
+        'Shelf': {
             name: "Shelf",
-            items: [
-                { id: 1, name: "Sugar" },
-                { id: 2, name: "Salt" },        
-            ],
+            items: {
+                1: unlimitedQty, // Sugar
+                2: unlimitedQty, // Salt
+            },
             occupiedBy: null,
-        },{
+        },
+        'Utensils': {
             name: "Utensils",
-            items: [
-                { id: 3, name: "Knife" },
-                { id: 4, name: "Bowl" },
-                { id: 5, name: "Pot" },
-            ],
+            items: {
+                3: 1, // Knife. This means there is qty 1 knife here.
+                4: 1, // Bowl
+                5: 1, // Pot
+            },
             occupiedBy: null,
-        },{
+        },
+        'Fridge': {
             name: "Fridge",
-            items: [
-                { id: 6, name: "Lime" },
-            ],
+            items: {
+                6: unlimitedQty, // Lime
+            },
             occupiedBy: null,
-        },{
+        },
+        'CuttingBoard': {
             name: "CuttingBoard",
-            items: [],
+            items: {},
             occupiedBy: null,
             actions: [
-                { name: "Cut", consumeId: 6, provide: { id: 7, name: "Half Lime" }, usingId: 3}
+                { name: "Cut", consumeId: 6, provideId: 7, usingId: 3}, // Cut limes into half limes using knife
             ]
-        },{
+        },
+        'Juicer': {
             name: "Juicer",
-            items: [],
+            items: {},
             occupiedBy: null,
-        },{
+        },
+        'Stove': {
             name: "Stove",
-            items: [],
+            items: {},
             occupiedBy: null,
         }
-    ]
+    }
 }
 
 // function updateInventory(people, personId, item, deltaQty) {
@@ -55,24 +72,35 @@ function kitchenReducer(state, action) {
     console.log(`reduce`);
     console.log(action);
     switch (action.type) {
-        case "PLAYER_JOINED":
+        case "PLAYER_JOINED": {
+
             // If player is already there then ignore. Happens in dev mode with events firing twice.
-            if (state.people.find(person => person.id === action.player.id)) {
+            if (action.player.id in state.people) {
                 return state;
             }
-            // Find the first unoccupied station.
-            const firstEmptyStation = state.stations.find(station => !station.occupiedBy);
-            if (firstEmptyStation) {
-                const updatedPeople = [...state.people, {...action.player, station: firstEmptyStation.name}];
-                const updatedStations = state.stations.map(station =>
-                    station.name === firstEmptyStation.name
-                    ? { ...station, occupiedBy: action.player}
-                    : station
-                );
-                return {...state, people: updatedPeople, stations: updatedStations};
+            const firstEmptyStation = Object.values(state.stations).find(station => station.occupiedBy);
+            if (!firstEmptyStation) {
+                console.log('No empty stations available for new player');
             }
-            console.log('No empty stations available for new player')
-            return state;
+
+            // Add new player to people object with the station name.
+            const updatedPeople = {
+                ...state.people,
+                [action.player.id]: {...action.player, station: firstEmptyStation.name }
+            };
+
+            // Mark the station as occupied by the player.
+            const updatedStations = {
+                ...state.stations,
+                [firstEmptyStation.name]: { ...firstEmptyStation, occupiedBy: action.player.id}
+            };
+
+            return {
+                ...state,
+                people: updatedPeople,
+                stations: updatedStations,
+            }
+        }
             
         case "MOVE_TO_STATION":
             // Find the person and update their station.
@@ -139,8 +167,8 @@ export default function Kitchen({playerId}) {
 
     // On startup, load the first player.
     React.useEffect(() => {
-        dispatch({ type: "PLAYER_JOINED", player: { id: 1, name: 'Chef 1', station: null, inventory: [] }});
-        //dispatch({ type: "PLAYER_JOINED", player: { id: 2, name: 'Kanara', station: null, inventory: [] }});
+        dispatch({ type: "PLAYER_JOINED", player: { id: 1, name: 'Chef 1', station: null, inventory: {} }});
+        //dispatch({ type: "PLAYER_JOINED", player: { id: 2, name: 'Kanara', station: null, inventory: {} }});
     }, [playerId]);
 
     function onMoveClicked(stationName) {
@@ -148,13 +176,13 @@ export default function Kitchen({playerId}) {
     }
 
     // Find the attached player by their playerId.
-    const player = state.people.find(person => person.id === playerId);
+    const player = state.people[playerId];
 
     return <>
         <div className="kitchen">
             <h3>Kitchen</h3>
             <div className="stations-container">
-                {state.stations.map((station) => (
+                {Object.values(state.stations).map((station) => (
                     <div key={station.name} className="station-area">
                         <Station 
                             name={station.name}
