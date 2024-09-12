@@ -72,7 +72,6 @@ function kitchenReducer(state, action) {
     console.log(action);
     switch (action.type) {
         case "PLAYER_JOINED": {
-
             // If player is already there then ignore. Happens in dev mode with events firing twice.
             if (action.player.id in state.people) {
                 return state;
@@ -104,27 +103,35 @@ function kitchenReducer(state, action) {
         }
             
         case "MOVE_TO_STATION":
-            // Find the person and update their station.
-            const updatedPeople = state.people.map(person =>
-                person.id === action.personId
-                    ? { ...person, station: action.stationName }
-                    : person
-            );
-            // Update stations to be occupied by person.
-            const updatedStations = state.stations.map(station => {
-                // If moving into a station, mark it as occupied
-                if (station.name === action.stationName) {
-                    return { ...station, occupiedBy: updatedPeople.find(person => person.id === action.personId)};
+            const person = state.people[action.personId];
+            if (!person) {
+                console.log(`Person ${action.persionId} not found`);
+                return state;
+            }
+
+            const newPerson = { ...person, station: action.stationName};
+            const oldStation = state.stations[person.station];
+            const newStation = state.stations[action.stationName];
+
+            // Move the person to the new station.
+            const updatedPeople = {
+                ...state.people,
+                [action.personId]: newPerson,
+            };
+            // Remove the person from the old station and add them to the new station.
+            let updatedStations = {
+                ...state.stations,
+                [newStation.name]: { ...newStation, occupiedBy: newPerson },
+            };
+            if (oldStation) {
+                updatedStations = {
+                    ...updatedStations,
+                    [oldStation.name]: { ...oldStation, occupiedBy: null },
                 }
-                // If leaving a station, mark it as unoccupied.
-                if (station.occupiedBy && station.occupiedBy.id === action.personId) {
-                    return { ...station, occupiedBy: null};
-                }
-                return station;
-            })
-            const newState = { ...state, people: updatedPeople, stations: updatedStations};
+            }
+            const newState = { ...state, people: updatedPeople, stations: updatedStations };
             console.log(newState);
-            return { ...state, people: updatedPeople, stations: updatedStations};
+            return newState;
 
         case "GET_ITEM": {
             const updatedPeople = state.people.map(person => {
