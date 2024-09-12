@@ -187,7 +187,8 @@ function kitchenReducer(state, action) {
         case "PUT_ITEM": {
             const person = getPerson(state, action.fromPersonId);
             const item = state.items[action.itemId];
-            const station = state.stations[person.station];
+            const stationName = person.station;
+            const station = state.stations[stationName];
             const qty = 1;
             console.log('before put item: personInv, stationInv:');
             console.log(person.inventory);
@@ -202,7 +203,7 @@ function kitchenReducer(state, action) {
             const newState = {
                 ...state,
                 people: { ...state.people, [newPerson.id]: newPerson },
-                stations: { ...state.stations, [newStation.id]: newStation },
+                stations: { ...state.stations, [stationName]: newStation },
             };
             console.log(newState);
             return newState;

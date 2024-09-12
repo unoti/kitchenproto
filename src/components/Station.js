@@ -1,5 +1,5 @@
 import PosButton from "./PosButton"
-//import { unlimitedQty } from "./constants"
+import { unlimitedQty } from "./constants"
 
 export default function Station({ name, items, inventory, occupiedBy, canGet, onMoveClicked, dispatch }) {
     function getItem(item) {
@@ -16,6 +16,7 @@ export default function Station({ name, items, inventory, occupiedBy, canGet, on
             {Object.entries(inventory).map(([itemId, qty]) => (
                 <div key={itemId} className="station-item">
                     <span className="item-name">{items[itemId].name}</span>
+                    {qty > 1 && qty != unlimitedQty && <span className="item-qty"> x {qty}</span>}
                     {canGet && <button className="item-grab-button" onClick={() => getItem(items[itemId])}>Get</button>}
                 </div>
             ))}
