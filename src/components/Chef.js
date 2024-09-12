@@ -1,6 +1,7 @@
 export default function Chef({player, dispatch}) {
     function putItem(item) {
-        dispatch({ type: "PUT_ITEM", fromPersonId: player.id, item});
+        const adjusted_item = { ...item, qty: 1 };
+        dispatch({ type: "PUT_ITEM", fromPersonId: player.id, item: adjusted_item});
     }
 
     return <div className="attached-player">

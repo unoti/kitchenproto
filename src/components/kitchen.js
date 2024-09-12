@@ -47,6 +47,10 @@ const initialState = {
     ]
 }
 
+// function updateInventory(people, personId, item, deltaQty) {
+//     // Return a new people array with the given inventory increased (deltaQty>0) or decreased (deltaQty<0).
+// }
+
 function kitchenReducer(state, action) {
     console.log(`reduce`);
     console.log(action);
@@ -93,7 +97,6 @@ function kitchenReducer(state, action) {
             console.log(newState);
             return { ...state, people: updatedPeople, stations: updatedStations};
 
-
         case "GET_ITEM": {
             const updatedPeople = state.people.map(person => {
                 if (person.id === action.personId) {
@@ -115,7 +118,17 @@ function kitchenReducer(state, action) {
             });
             return { ...state, people: updatedPeople };
         }
-        
+
+        // case "PUT_ITEM": {
+        //     const updatedPeople = state.people.map(person => {
+        //         if (person.id === action.fromPersonId) {
+        //             const foundItemIndex = person.inventory.findIndex(item => item.id === action.item.id);
+        //         }
+        //         return person;
+        //     });
+        //     return state;
+        // }
+
         default:
             return state;
     }
@@ -140,21 +153,21 @@ export default function Kitchen({playerId}) {
     return <>
         <div className="kitchen">
             <h3>Kitchen</h3>
-                <div className="stations-container">
-                    {state.stations.map((station) => (
-                        <div key={station.name} className="station-area">
-                            <Station 
-                                name={station.name}
-                                items={station.items}
-                                canGet={station.occupiedBy && station.occupiedBy.id === playerId}
-                                occupiedBy={station.occupiedBy}
-                                onMoveClicked={() => onMoveClicked(station.name)}
-                                dispatch={dispatch}
-                            />
-                            {station.occupiedBy && station.occupiedBy.id === playerId &&
-                                <Chef player={player} dispatch={dispatch} />}
-                        </div>
-                    ))}
+            <div className="stations-container">
+                {state.stations.map((station) => (
+                    <div key={station.name} className="station-area">
+                        <Station 
+                            name={station.name}
+                            items={station.items}
+                            canGet={station.occupiedBy && station.occupiedBy.id === playerId}
+                            occupiedBy={station.occupiedBy}
+                            onMoveClicked={() => onMoveClicked(station.name)}
+                            dispatch={dispatch}
+                        />
+                        {station.occupiedBy && station.occupiedBy.id === playerId &&
+                            <Chef player={player} dispatch={dispatch} />}
+                    </div>
+                ))}
             </div>
         </div>
     </>
