@@ -9,8 +9,8 @@ export default function Station({ name, items, occupiedBy, canGet, onMoveClicked
         <PosButton occupiedBy={occupiedBy} onClick={onMoveClicked}/>
         <div className="station-title">{name}</div>
         <ul className="station-items">
-            {items.map((item) => (
-                <div key={item.id} className="station-item">
+            {Object.values(items).map((item, itemId) => (
+                <div key={itemId} className="station-item">
                     <span className="item-name">{item.name}</span>
                     {canGet && <button className="item-grab-button" onClick={() => getItem(item)}>Get</button>}
                 </div>

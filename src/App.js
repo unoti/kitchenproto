@@ -1,5 +1,5 @@
 import './App.css';
-import Kitchen from "./components/Kitchen"
+import Kitchen from "./components/kitchen"
 
 function App() {
   return (

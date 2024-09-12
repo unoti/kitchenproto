@@ -78,10 +78,12 @@ function kitchenReducer(state, action) {
             if (action.player.id in state.people) {
                 return state;
             }
-            const firstEmptyStation = Object.values(state.stations).find(station => station.occupiedBy);
+            const firstEmptyStation = Object.values(state.stations).find(station => !station.occupiedBy);
             if (!firstEmptyStation) {
                 console.log('No empty stations available for new player');
             }
+            console.log('firstempty');
+            console.log(firstEmptyStation);
 
             // Add new player to people object with the station name.
             const updatedPeople = {
@@ -95,11 +97,13 @@ function kitchenReducer(state, action) {
                 [firstEmptyStation.name]: { ...firstEmptyStation, occupiedBy: action.player.id}
             };
 
-            return {
+            const newState = {
                 ...state,
                 people: updatedPeople,
                 stations: updatedStations,
-            }
+            };
+            console.log(newState);
+            return newState;
         }
             
         case "MOVE_TO_STATION":
