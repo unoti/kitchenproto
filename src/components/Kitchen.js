@@ -2,18 +2,17 @@ import React, { useReducer } from 'react';
 
 import Chef from "./Chef"
 import Station from "./Station"
-import { unlimitedQty } from "./constants"
-
+import { unlimitedQty, ItemTypes } from "./constants"
 
 const initialState = {
     items: {
-        1: { id: 1, name: 'Sugar', type: 'ingredient', uom: 'volume' },
-        2: { id: 2, name: 'Salt', type: 'ingredient', uom: 'volume' },
-        3: { id: 3, name: 'Knife', type: 'tool' },
-        4: { id: 4, name: 'Bowl', type: 'container' },
-        5: { id: 5, name: 'Pot', type: 'container'},
-        6: { id: 6, name: 'Lime', type: 'ingredient', uom: 'each'},
-        7: { id: 7, name: 'Half Lime', type: 'ingredient', uom: 'each' },
+        1: { id: 1, name: 'Sugar', type: ItemTypes.ingredient, uom: 'volume' },
+        2: { id: 2, name: 'Salt', type: ItemTypes.ingredient, uom: 'volume' },
+        3: { id: 3, name: 'Knife', type: ItemTypes.tool },
+        4: { id: 4, name: 'Bowl', type: ItemTypes.container },
+        5: { id: 5, name: 'Pot', type: ItemTypes.container },
+        6: { id: 6, name: 'Lime', type: ItemTypes.ingredient, uom: 'each'},
+        7: { id: 7, name: 'Half Lime', type: ItemTypes.ingredient, uom: 'each' },
     },
 
     people: {}, // Key: playerId. We'll seed this with a first player by submitting an action below.
@@ -25,6 +24,7 @@ const initialState = {
                 2: unlimitedQty, // Salt
             },
             occupiedBy: null,
+            holdTypes: [ItemTypes.ingredient],
         },
         'Utensils': {
             name: "Utensils",
@@ -34,6 +34,7 @@ const initialState = {
                 5: 1, // Pot
             },
             occupiedBy: null,
+            holdTypes: [ItemTypes.container, ItemTypes.tool],
         },
         'Fridge': {
             name: "Fridge",
@@ -41,11 +42,13 @@ const initialState = {
                 6: unlimitedQty, // Lime
             },
             occupiedBy: null,
+            holdTypes: [ItemTypes.ingredient],
         },
         'CuttingBoard': {
             name: "CuttingBoard",
             inventory: {},
             occupiedBy: null,
+            holdTypes: [ItemTypes.ingredient],
             actions: [
                 { name: "Cut Lime", consumeId: 6, provideId: 7, usingId: 3}, // Cut limes into half limes using knife
             ]
@@ -54,11 +57,13 @@ const initialState = {
             name: "Juicer",
             inventory: {},
             occupiedBy: null,
+            holdTypes: [ItemTypes.ingredient],
         },
         'Stove': {
             name: "Stove",
             inventory: {},
             occupiedBy: null,
+            holdTypes: [ItemTypes.container],
         }
     }
 }
@@ -111,7 +116,6 @@ function getPerson(state, personId) {
     return person;
 }
 
-
 // Perform an inventory transaction between a person and their station, returning the new state.
 // qty: positive means take from station to player. Negative means take from player and add to station.
 function transactState(state, itemId, qty, personId) {
@@ -130,7 +134,6 @@ function transactState(state, itemId, qty, personId) {
     };
     return newState;
 }
-
 
 function kitchenReducer(state, action) {
     console.log(`reduce`);
@@ -216,6 +219,11 @@ function kitchenReducer(state, action) {
     }
 }
 
+function canPutItem(items, itemId, station) {
+    const item = items[itemId];
+    return station.holdTypes.includes(item.type);
+}
+
 export default function Kitchen({playerId}) {
     const [state, dispatch] = useReducer(kitchenReducer, initialState);
 
@@ -228,7 +236,7 @@ export default function Kitchen({playerId}) {
     function onMoveClicked(stationName) {
         dispatch({ type: "MOVE_TO_STATION", personId: playerId, stationName}, [playerId]);
     }
-
+    
     const player = state.people[playerId];
 
     return <>
@@ -249,7 +257,9 @@ export default function Kitchen({playerId}) {
                         {station.occupiedBy && station.occupiedBy.id === playerId &&
                             <Chef player={player}
                                 items={state.items}
+                                station={station}
                                 availableActions={availableActions(station, player)}
+                                canPut={canPutItem}
                                 dispatch={dispatch} />}
                     </div>
                 ))}

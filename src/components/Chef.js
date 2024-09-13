@@ -1,4 +1,4 @@
-export default function Chef({player, items, availableActions, dispatch}) {
+export default function Chef({player, items, availableActions, station, canPut, dispatch}) {
     function putItem(itemId) {
         dispatch({ type: "PUT_ITEM", fromPersonId: player.id, itemId: itemId});
     }
@@ -15,7 +15,8 @@ export default function Chef({player, items, availableActions, dispatch}) {
                 <div key={itemId} className="station-item">
                     <span className="item-name">{items[itemId].name}</span>
                     {qty > 1 && <span className="item-qty"> x {qty}</span>}
-                    <button className="item-put" onClick={() => putItem(itemId)}>Put</button>
+                    {canPut(items, itemId, station) &&
+                        <button className="item-put" onClick={() => putItem(itemId)}>Put</button>}
                 </div>
             ))}
         </div>
