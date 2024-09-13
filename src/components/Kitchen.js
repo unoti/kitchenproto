@@ -13,6 +13,7 @@ const initialState = {
         5: { id: 5, name: 'Pot', type: ItemTypes.container },
         6: { id: 6, name: 'Lime', type: ItemTypes.ingredient, uom: 'each'},
         7: { id: 7, name: 'Half Lime', type: ItemTypes.ingredient, uom: 'each' },
+        8: { id: 8, name: 'Lime Juice', type: ItemTypes.ingredient, uom: 'ml' },
     },
 
     people: {}, // Key: playerId. We'll seed this with a first player by submitting an action below.
@@ -51,13 +52,16 @@ const initialState = {
             holdTypes: [ItemTypes.ingredient],
             operations: [
                 { name: "Cut Lime", consumeId: 6, provideId: 7, provideQty: 2, usingId: 3}, // Cut limes into half limes using knife
-            ]
+            ],
         },
         'Juicer': {
             name: "Juicer",
             inventory: {},
             occupiedBy: null,
             holdTypes: [ItemTypes.ingredient],
+            operations: [
+                { name: "Juice", consumeId: 7, provideId: 8, },
+            ],
         },
         'Stove': {
             name: "Stove",
