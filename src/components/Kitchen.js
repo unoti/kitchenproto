@@ -49,7 +49,7 @@ const initialState = {
             inventory: {},
             occupiedBy: null,
             holdTypes: [ItemTypes.ingredient],
-            actions: [
+            operations: [
                 { name: "Cut Lime", consumeId: 6, provideId: 7, provideQty: 2, usingId: 3}, // Cut limes into half limes using knife
             ]
         },
@@ -69,16 +69,16 @@ const initialState = {
 }
 
 // Returns a list of action names that the given person can currently perform at the station.
-export function availableActions(station, person) {
-    if (!station.actions) {
+export function availableOperations(station, person) {
+    if (!station.operations) {
         return [];
     }
-    const actions = station.actions.filter((action) => {
+    const operations = station.operations.filter((action) => {
         const hasTool = action.usingId ? person.inventory[action.usingId] : true;
         const hasItem = station.inventory[action.consumeId] > 0;
         return hasTool && hasItem;
     });
-    return actions;
+    return operations;
 }
 
 function deleteKey(o, key) {
@@ -272,7 +272,7 @@ export default function Kitchen({playerId}) {
                             <Chef player={player}
                                 items={state.items}
                                 station={station}
-                                availableActions={availableActions(station, player)}
+                                availableOperations={availableOperations(station, player)}
                                 canPut={canPutItem}
                                 dispatch={dispatch} />}
                     </div>

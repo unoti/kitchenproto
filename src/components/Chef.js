@@ -1,4 +1,4 @@
-export default function Chef({player, items, availableActions, station, canPut, dispatch}) {
+export default function Chef({player, items, availableOperations, station, canPut, dispatch}) {
     function putItem(itemId) {
         dispatch({ type: "PUT_ITEM", fromPersonId: player.id, itemId: itemId});
     }
@@ -9,7 +9,7 @@ export default function Chef({player, items, availableActions, station, canPut, 
 
     return <div className="attached-player">
         <div className="player-actions">
-            {availableActions.map(action => (
+            {availableOperations.map(action => (
                 <button key={action.name} onClick={() => doOperation(action)}>{action.name}</button>
             ))}
         </div>
