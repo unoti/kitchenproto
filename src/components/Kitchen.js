@@ -50,7 +50,7 @@ const initialState = {
             occupiedBy: null,
             holdTypes: [ItemTypes.ingredient],
             actions: [
-                { name: "Cut Lime", consumeId: 6, provideId: 7, usingId: 3}, // Cut limes into half limes using knife
+                { name: "Cut Lime", consumeId: 6, provideId: 7, provideQty: 2, usingId: 3}, // Cut limes into half limes using knife
             ]
         },
         'Juicer': {
@@ -222,7 +222,8 @@ function kitchenReducer(state, action) {
             const consumeItem = state.items[action.operation.consumeId];
             const provideItem = state.items[action.operation.provideId];
             const afterConsumeInv = updateInventory(station.inventory, consumeItem, -1);
-            const afterProvideInv = updateInventory(afterConsumeInv, provideItem, 1)
+            const provideQty = action.operation.provideQty ?? 1;
+            const afterProvideInv = updateInventory(afterConsumeInv, provideItem, provideQty);
             const newState = updateStationInventory(state, station, afterProvideInv);
             return newState;
         }
