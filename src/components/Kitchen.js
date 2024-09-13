@@ -63,9 +63,15 @@ const initialState = {
     }
 }
 
-// function updateInventory(people, personId, item, deltaQty) {
-//     // Return a new people array with the given inventory increased (deltaQty>0) or decreased (deltaQty<0).
-// }
+// Returns a list of action names that the given person can currently perform at the station.
+export function availableActions(station, person) {
+    const actions = station.actions.filter((action) => {
+        const hasTool = action.usingId ? person.inventory[action.usingId] : true;
+        const hasItem = station.inventory[action.consumeId] > 0;
+        return hasTool && hasItem;
+    });
+    return actions;
+}
 
 function deleteKey(o, key) {
     // Copy object o with key removed.
@@ -196,6 +202,10 @@ function kitchenReducer(state, action) {
             const newState = transactState(state, action.itemId, qty, action.fromPersonId);
             console.log(newState);
             return newState;
+        }
+
+        case "PERFORM_ACTION": {
+            return state;
         }
 
         default:
