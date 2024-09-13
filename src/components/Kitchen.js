@@ -116,6 +116,13 @@ function getPerson(state, personId) {
     return person;
 }
 
+function updateStationInventory(state, station, newInventory) {
+    const newStation = { ...station, inventory: newInventory };
+    const newStations = { ...state.stations, [station.name]: newStation };
+    const newState = { ...state, stations: newStations };
+    return newState;
+}
+
 // Perform an inventory transaction between a person and their station, returning the new state.
 // qty: positive means take from station to player. Negative means take from player and add to station.
 function transactState(state, itemId, qty, personId) {
@@ -210,8 +217,14 @@ function kitchenReducer(state, action) {
             return newState;
         }
 
-        case "PERFORM_ACTION": {
-            return state;
+        case "STATION_OP": {
+            const station = state.stations[action.stationName];
+            const consumeItem = state.items[action.operation.consumeId];
+            const provideItem = state.items[action.operation.provideId];
+            const afterConsumeInv = updateInventory(station.inventory, consumeItem, -1);
+            const afterProvideInv = updateInventory(afterConsumeInv, provideItem, 1)
+            const newState = updateStationInventory(state, station, afterProvideInv);
+            return newState;
         }
 
         default:

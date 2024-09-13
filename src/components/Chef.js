@@ -3,10 +3,14 @@ export default function Chef({player, items, availableActions, station, canPut, 
         dispatch({ type: "PUT_ITEM", fromPersonId: player.id, itemId: itemId});
     }
 
+    function doOperation(operation) {
+        dispatch({ type: "STATION_OP", stationName: station.name, operation});
+    }
+
     return <div className="attached-player">
         <div className="player-actions">
             {availableActions.map(action => (
-                <button key={action.name}>{action.name}</button>
+                <button key={action.name} onClick={() => doOperation(action)}>{action.name}</button>
             ))}
         </div>
         <h3>Carrying</h3>
