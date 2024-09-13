@@ -74,14 +74,11 @@ function deleteKey(o, key) {
 }
 
 function updateInventory(existingInventory, item, deltaQty) {
-    console.log(`updateInventory deltaQty=${deltaQty} follows: existingInventory, item`);
-    console.log(existingInventory);
-    console.log(item);
     // Update an inventory and return the updated inventory. deltaQty negative to reduce, positive to increase.
     const existingQty = existingInventory[item.id] ?? 0;
-    const newQty = existingQty + deltaQty;
+    const newQty = existingQty === unlimitedQty ? unlimitedQty : existingQty + deltaQty;
     if (newQty) {
-        return { ...existingInventory, [item.id]: existingQty + deltaQty };
+        return { ...existingInventory, [item.id]: newQty };
     } else {
         return deleteKey(existingInventory, item.id);
     }
@@ -91,11 +88,8 @@ function updateInventory(existingInventory, item, deltaQty) {
  *  returns [fromInventory, toInventory].
  */ 
 function transactInventory(item, deltaQty, fromInventory, toInventory) {
-    const updatedFromInventory = updateInventory(fromInventory, item, -deltaQty);
-    const updatedToInventory = updateInventory(toInventory, item, deltaQty);
-    console.log('transact');
-    console.log(updatedFromInventory);
-    console.log(updatedToInventory);
+    const updatedFromInventory = updateInventory(fromInventory, item, deltaQty);
+    const updatedToInventory = updateInventory(toInventory, item, -deltaQty);
     return [updatedFromInventory, updatedToInventory];
 }
 
@@ -107,7 +101,28 @@ function getPerson(state, personId) {
     }
     return person;
 }
-    
+
+
+// Perform an inventory transaction between a person and their station, returning the new state.
+// qty: positive means take from station to player. Negative means take from player and add to station.
+function transactState(state, itemId, qty, personId) {
+    const person = getPerson(state, personId);
+    const item = state.items[itemId];
+    const stationName = person.station;
+    const station = state.stations[stationName];
+    const [newPersonInventory, newStationInventory] = transactInventory(
+        item, qty, person.inventory, station.inventory);
+    const newPerson = { ...person, inventory: newPersonInventory };
+    const newStation = { ...station, inventory: newStationInventory };
+    const newState = {
+        ...state,
+        people: { ...state.people, [newPerson.id]: newPerson },
+        stations: { ...state.stations, [stationName]: newStation },
+    };
+    return newState;
+}
+
+
 function kitchenReducer(state, action) {
     console.log(`reduce`);
     console.log(action);
@@ -171,40 +186,14 @@ function kitchenReducer(state, action) {
         }
 
         case "GET_ITEM": {
-            const person = getPerson(state, action.personId);
-            // change this to use transact
-            const newPersonInventory = updateInventory(person.inventory, action.item, action.qty);
-            const newPerson = { ...person, inventory: newPersonInventory };
-            const newState = {
-                ...state,
-                people: { ...state.people, [newPerson.id]: newPerson },
-            };
-
+            const newState = transactState(state, action.item.id, action.qty, action.personId);
             console.log(newState);
             return newState;
         }
 
         case "PUT_ITEM": {
-            const person = getPerson(state, action.fromPersonId);
-            const item = state.items[action.itemId];
-            const stationName = person.station;
-            const station = state.stations[stationName];
-            const qty = 1;
-            console.log('before put item: personInv, stationInv:');
-            console.log(person.inventory);
-            console.log(station.inventory);
-            const [newPersonInventory, newStationInventory] = transactInventory(
-                item, qty, person.inventory, station.inventory);
-            console.log('put item: newPersonInv, newStationInv:');
-            console.log(newPersonInventory);
-            console.log(newStationInventory);
-            const newPerson = { ...person, inventory: newPersonInventory };
-            const newStation = { ...station, inventory: newStationInventory };
-            const newState = {
-                ...state,
-                people: { ...state.people, [newPerson.id]: newPerson },
-                stations: { ...state.stations, [stationName]: newStation },
-            };
+            const qty = -1;
+            const newState = transactState(state, action.itemId, qty, action.fromPersonId);
             console.log(newState);
             return newState;
         }
