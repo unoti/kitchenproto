@@ -20,6 +20,7 @@
 .station-items {
   border: 1px solid;
   padding: 10px 10px 10px 10px;
+  min-height: 8rem;
 }
 
 .station {
@@ -51,7 +52,6 @@
 
 .attached-player {
   clear: both;
-  width: 20%;
 }
 
 .attached-player h3 {

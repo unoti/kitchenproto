@@ -1,9 +1,14 @@
-export default function Chef({player, items, dispatch}) {
+export default function Chef({player, items, availableActions, dispatch}) {
     function putItem(itemId) {
         dispatch({ type: "PUT_ITEM", fromPersonId: player.id, itemId: itemId});
     }
 
     return <div className="attached-player">
+        <div className="player-actions">
+            {availableActions.map(action => (
+                <button key={action.name}>{action.name}</button>
+            ))}
+        </div>
         <h3>Carrying</h3>
         <div>
             {Object.entries(player.inventory).map(([itemId, qty]) => (

@@ -47,7 +47,7 @@ const initialState = {
             inventory: {},
             occupiedBy: null,
             actions: [
-                { name: "Cut", consumeId: 6, provideId: 7, usingId: 3}, // Cut limes into half limes using knife
+                { name: "Cut Lime", consumeId: 6, provideId: 7, usingId: 3}, // Cut limes into half limes using knife
             ]
         },
         'Juicer': {
@@ -65,6 +65,9 @@ const initialState = {
 
 // Returns a list of action names that the given person can currently perform at the station.
 export function availableActions(station, person) {
+    if (!station.actions) {
+        return [];
+    }
     const actions = station.actions.filter((action) => {
         const hasTool = action.usingId ? person.inventory[action.usingId] : true;
         const hasItem = station.inventory[action.consumeId] > 0;
@@ -226,7 +229,6 @@ export default function Kitchen({playerId}) {
         dispatch({ type: "MOVE_TO_STATION", personId: playerId, stationName}, [playerId]);
     }
 
-    // Find the attached player by their playerId.
     const player = state.people[playerId];
 
     return <>
@@ -245,7 +247,10 @@ export default function Kitchen({playerId}) {
                             dispatch={dispatch}
                         />
                         {station.occupiedBy && station.occupiedBy.id === playerId &&
-                            <Chef player={player} items={state.items} dispatch={dispatch} />}
+                            <Chef player={player}
+                                items={state.items}
+                                availableActions={availableActions(station, player)}
+                                dispatch={dispatch} />}
                     </div>
                 ))}
             </div>
